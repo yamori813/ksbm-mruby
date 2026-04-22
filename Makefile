@@ -25,7 +25,7 @@ CROSS_LIBS += -lc -lgcc
 CROSS_CFLAGS = -Ibuild/work/$(NEWLIBDIR)/newlib/libc/include/
 CROSS_CFLAGS += -Ibuild/work/$(LWIPDIR)/src/include -Ibuild/work/$(LWIPDIR)/kendin/include
 CROSS_CFLAGS += -Ibuild/work/$(BARESSLDIR)/inc
-CROSS_CFLAGS += -Ibuild/work/$(MRUBYDIR)/include
+CROSS_CFLAGS += -Ibuild/work/$(MRUBYDIR)/build/kendin/include
 
 OBJS = main.o startup.o xprintf.o mt19937ar.o net.o bear.o httpsvr.o syscalls.o net_ether.o i2c.o
 
@@ -43,6 +43,11 @@ main.bin: $(OBJS)
 	$(CROSS_OBJCOPY) -O binary main.elf main.bin
 
 image :
+	build/work/mruby/build/host/bin/mrbc -ohoge.mrb $(RBSCRIPT)
+	@sha256 hoge.mrb
+	cat $(VMOBJ).uboot hoge.mrb > main.uimg
+
+preimage :
 	mrbc -ohoge.mrb $(RBSCRIPT)
 	@sha256 hoge.mrb
 	cat $(VMOBJ).uboot hoge.mrb > main.uimg
